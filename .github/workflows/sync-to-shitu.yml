@@ -13,10 +13,13 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Sync to shitu figma-ui and v0 branches
+        env:
+          SHITU_PAT: ${{ secrets.SHITU_PAT }}
         run: |
-          git remote add shitu https://x-access-token:${{ secrets.SHITU_PAT }}@github.com/xychen518518-wq/shitu.git
+          git remote add shitu https://x-access-token:${SHITU_PAT}@github.com/xychen518518-wq/shitu.git
 
           # Push to figma-ui branch (force overwrite)
           git push shitu HEAD:figma-ui --force
