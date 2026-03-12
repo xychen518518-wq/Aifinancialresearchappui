@@ -3,6 +3,7 @@ name: Sync to shitu repo
 on:
   push:
     branches: [main]
+  workflow_dispatch:
 
 jobs:
   sync:
