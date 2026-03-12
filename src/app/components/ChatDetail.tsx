@@ -2,6 +2,8 @@ import { useState, useRef, useEffect } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router";
 import { motion } from "motion/react";
 import { ArrowLeft, Send, MoreVertical, Sparkles } from "lucide-react";
+import { useTheme } from "./ThemeContext";
+import { useGlassStyle } from "./GlassCard";
 
 interface Message {
   id: string;
@@ -38,6 +40,9 @@ export function ChatDetail() {
   const { id } = useParams();
   const [searchParams] = useSearchParams();
   const initialQuery = searchParams.get("q") || "";
+  const { isDark } = useTheme();
+  const glassSubtle = useGlassStyle("subtle");
+  const glassElevated = useGlassStyle("elevated");
 
   const [messages, setMessages] = useState<Message[]>(() => {
     if (id === "new" && initialQuery) {
@@ -56,7 +61,6 @@ export function ChatDetail() {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
   }, [messages]);
 
-  // Simulate AI response
   useEffect(() => {
     if (isTyping) {
       const timer = setTimeout(() => {
@@ -96,17 +100,21 @@ export function ChatDetail() {
   return (
     <div className="h-full flex flex-col">
       {/* Header */}
-      <header className="flex items-center gap-3 px-4 pt-[env(safe-area-inset-top)] h-14 flex-shrink-0 border-b border-white/[0.04]">
+      <header
+        className={`flex items-center gap-3 px-4 pt-[env(safe-area-inset-top)] h-14 flex-shrink-0 ${
+          isDark ? "shadow-[0_1px_0_0_rgba(255,255,255,0.04)]" : "shadow-[0_1px_0_0_rgba(0,0,0,0.06)]"
+        }`}
+      >
         <button onClick={() => navigate(-1)} className="p-1">
-          <ArrowLeft size={20} className="text-white/60" />
+          <ArrowLeft size={20} className={isDark ? "text-white/60" : "text-black/45"} />
         </button>
         <div className="flex-1 min-w-0">
-          <h4 className="text-white/85 truncate" style={{ fontSize: 15 }}>
+          <h4 className={`truncate ${isDark ? "text-white/85" : "text-black/75"}`} style={{ fontSize: 15 }}>
             {chatTitle}
           </h4>
         </div>
         <button className="p-1">
-          <MoreVertical size={18} className="text-white/40" />
+          <MoreVertical size={18} className={isDark ? "text-white/40" : "text-black/30"} />
         </button>
       </header>
 
@@ -126,19 +134,27 @@ export function ChatDetail() {
               </div>
             )}
             <div
-              className={`max-w-[80%] rounded-2xl px-4 py-3 ${
+              className="max-w-[80%] rounded-2xl px-4 py-3"
+              style={
                 msg.role === "user"
-                  ? "bg-gradient-to-br from-amber-500/20 to-amber-600/10 border border-amber-500/15"
-                  : "bg-white/[0.04] border border-white/[0.06]"
-              }`}
+                  ? {
+                      background: isDark
+                        ? "linear-gradient(135deg, rgba(245,158,11,0.18) 0%, rgba(217,119,6,0.08) 100%)"
+                        : "linear-gradient(135deg, rgba(245,158,11,0.15) 0%, rgba(217,119,6,0.06) 100%)",
+                      boxShadow: isDark
+                        ? "inset 0 0.5px 0 0 rgba(245,158,11,0.2), 0 1px 3px 0 rgba(0,0,0,0.1)"
+                        : "inset 0 0.5px 0 0 rgba(255,255,255,0.6), 0 1px 3px 0 rgba(0,0,0,0.04)",
+                    }
+                  : glassSubtle
+              }
             >
               <p
-                className="text-white/80 whitespace-pre-wrap"
+                className={`whitespace-pre-wrap ${isDark ? "text-white/80" : "text-black/70"}`}
                 style={{ fontSize: 13, lineHeight: 1.7 }}
               >
                 {msg.content}
               </p>
-              <span className="block text-right text-white/20 mt-1" style={{ fontSize: 10 }}>
+              <span className={`block text-right mt-1 ${isDark ? "text-white/18" : "text-black/15"}`} style={{ fontSize: 10 }}>
                 {msg.time}
               </span>
             </div>
@@ -154,14 +170,14 @@ export function ChatDetail() {
             <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-amber-500 to-amber-700 flex items-center justify-center flex-shrink-0">
               <span className="text-white" style={{ fontFamily: "'Noto Serif SC', serif", fontSize: 11 }}>识</span>
             </div>
-            <div className="bg-white/[0.04] border border-white/[0.06] rounded-2xl px-4 py-3 flex items-center gap-1.5">
+            <div className="rounded-2xl px-4 py-3 flex items-center gap-1.5" style={glassSubtle}>
               <motion.div
                 animate={{ opacity: [0.3, 1, 0.3] }}
                 transition={{ repeat: Infinity, duration: 1.2 }}
                 className="flex items-center gap-1"
               >
                 <Sparkles size={14} className="text-amber-400" />
-                <span className="text-white/40" style={{ fontSize: 12 }}>识途正在思考...</span>
+                <span className={isDark ? "text-white/40" : "text-black/35"} style={{ fontSize: 12 }}>识途正在思考...</span>
               </motion.div>
             </div>
           </motion.div>
@@ -169,15 +185,21 @@ export function ChatDetail() {
       </div>
 
       {/* Input */}
-      <div className="flex-shrink-0 px-4 pb-3 pt-2 border-t border-white/[0.04]">
-        <div className="flex items-center gap-2 bg-white/[0.06] border border-white/[0.08] rounded-2xl px-4 py-2.5">
+      <div
+        className={`flex-shrink-0 px-4 pb-3 pt-2 ${
+          isDark ? "shadow-[0_-1px_0_0_rgba(255,255,255,0.04)]" : "shadow-[0_-1px_0_0_rgba(0,0,0,0.06)]"
+        }`}
+      >
+        <div className="rounded-2xl px-4 py-2.5 flex items-center gap-2" style={glassElevated}>
           <input
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSend()}
             placeholder="继续提问..."
-            className="flex-1 bg-transparent text-white/90 placeholder-white/25 outline-none"
+            className={`flex-1 bg-transparent outline-none ${
+              isDark ? "text-white/90 placeholder-white/25" : "text-black/80 placeholder-black/25"
+            }`}
             style={{ fontSize: 14 }}
           />
           <button
@@ -185,7 +207,9 @@ export function ChatDetail() {
             className={`p-2 rounded-xl transition-all ${
               input.trim()
                 ? "bg-gradient-to-r from-amber-500 to-amber-600 text-white"
-                : "text-white/20"
+                : isDark
+                ? "text-white/20"
+                : "text-black/20"
             }`}
           >
             <Send size={18} />

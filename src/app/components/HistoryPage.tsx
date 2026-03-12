@@ -1,6 +1,8 @@
 import { motion } from "motion/react";
 import { useNavigate } from "react-router";
 import { Calendar, MessageSquare, Trash2 } from "lucide-react";
+import { useTheme } from "./ThemeContext";
+import { GlassOverlay } from "./GlassCard";
 
 const historyGroups = [
   {
@@ -35,11 +37,15 @@ const historyGroups = [
 
 export function HistoryPage() {
   const navigate = useNavigate();
+  const { isDark } = useTheme();
 
   return (
     <div className="h-full flex flex-col">
       <header className="px-5 pt-[env(safe-area-inset-top)] flex-shrink-0">
-        <h2 className="text-white/90 h-14 flex items-center" style={{ fontSize: 18, fontFamily: "'Noto Serif SC', serif" }}>
+        <h2
+          className={`h-14 flex items-center ${isDark ? "text-white/90" : "text-black/80"}`}
+          style={{ fontSize: 18, fontFamily: "'Noto Serif SC', serif" }}
+        >
           历史记录
         </h2>
       </header>
@@ -48,8 +54,8 @@ export function HistoryPage() {
         {historyGroups.map((group, gi) => (
           <div key={group.date} className="mb-5">
             <div className="flex items-center gap-2 mb-3">
-              <Calendar size={13} className="text-amber-400/50" />
-              <span className="text-white/30" style={{ fontSize: 12 }}>
+              <Calendar size={13} className={isDark ? "text-amber-400/40" : "text-amber-600/40"} />
+              <span className={isDark ? "text-white/25" : "text-black/25"} style={{ fontSize: 12 }}>
                 {group.date}
               </span>
             </div>
@@ -61,26 +67,34 @@ export function HistoryPage() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3, delay: gi * 0.1 + i * 0.05 }}
                   onClick={() => navigate(`/chat/${item.id}`)}
-                  className="w-full text-left flex items-center justify-between p-3.5 rounded-xl bg-white/[0.03] border border-white/[0.04] active:bg-white/[0.06] transition-colors group"
+                  className="relative overflow-hidden w-full text-left flex items-center justify-between p-3.5 rounded-xl transition-all active:scale-[0.98] group"
                 >
-                  <div className="flex-1 min-w-0">
-                    <h4 className="text-white/80 truncate" style={{ fontSize: 13 }}>
+                  <GlassOverlay />
+                  <div className="relative z-[1] flex-1 min-w-0">
+                    <h4
+                      className={`truncate ${isDark ? "text-white/75" : "text-black/65"}`}
+                      style={{ fontSize: 13 }}
+                    >
                       {item.title}
                     </h4>
                     <div className="flex items-center gap-2 mt-1">
-                      <MessageSquare size={10} className="text-white/20" />
-                      <span className="text-white/20" style={{ fontSize: 11 }}>
+                      <MessageSquare size={10} className={isDark ? "text-white/18" : "text-black/18"} />
+                      <span className={isDark ? "text-white/18" : "text-black/18"} style={{ fontSize: 11 }}>
                         {item.messages} 条对话
                       </span>
-                      <span className="text-white/15">·</span>
-                      <span className="text-white/20" style={{ fontSize: 11 }}>
+                      <span className={isDark ? "text-white/12" : "text-black/10"}>·</span>
+                      <span className={isDark ? "text-white/18" : "text-black/18"} style={{ fontSize: 11 }}>
                         {item.time}
                       </span>
                     </div>
                   </div>
                   <Trash2
                     size={14}
-                    className="text-white/10 group-active:text-red-400/50 flex-shrink-0 ml-3 transition-colors"
+                    className={`relative z-[1] flex-shrink-0 ml-3 transition-colors ${
+                      isDark
+                        ? "text-white/8 group-active:text-red-400/50"
+                        : "text-black/8 group-active:text-red-400/50"
+                    }`}
                   />
                 </motion.button>
               ))}
