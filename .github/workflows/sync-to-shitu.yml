@@ -19,6 +19,13 @@ jobs:
         env:
           SHITU_PAT: ${{ secrets.SHITU_PAT }}
         run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Remove .github dir to avoid needing workflow scope
+          git rm -rf .github
+          git commit -m "Sync from Figma Make (exclude workflows)"
+
           git remote add shitu https://x-access-token:${SHITU_PAT}@github.com/xychen518518-wq/shitu.git
 
           # Push to figma-ui branch (force overwrite)
