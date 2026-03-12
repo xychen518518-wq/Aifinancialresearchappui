@@ -1,0 +1,24 @@
+name: Sync to shitu repo
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Figma Make repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Sync to shitu figma-ui and v0 branches
+        run: |
+          git remote add shitu https://x-access-token:${{ secrets.SHITU_PAT }}@github.com/xychen518518-wq/shitu.git
+
+          # Push to figma-ui branch (force overwrite)
+          git push shitu HEAD:figma-ui --force
+
+          # Push to v0 branch (force overwrite)
+          git push shitu HEAD:v0/xychen518518-7697-e52ac3cd --force
